@@ -4,11 +4,33 @@ const Button = (props) => (
   <button onClick={props.handleClick}>{props.text}</button>
 );
 
-const Display = (props) => (
-  <div>
-    {props.name} {props.value}
-  </div>
+const StatisticsLine = (props) => (
+  <tr>
+    <td>
+      {props.name} {props.value}
+    </td>
+  </tr>
 );
+const Statistics = (props) => {
+  if (props.allValues.length === 0) {
+    return <div>No feedback given</div>;
+  }
+  return (
+    <table>
+      <StatisticsLine name="good" value={props.good}></StatisticsLine>
+      <StatisticsLine name="neutral" value={props.neutral}></StatisticsLine>
+      <StatisticsLine name="bad" value={props.bad}></StatisticsLine>
+      <StatisticsLine
+        name="average"
+        value={props.computeAverage(props.allValues)}
+      ></StatisticsLine>
+      <StatisticsLine
+        name="positive"
+        value={props.countPositives(props.allValues)}
+      ></StatisticsLine>
+    </table>
+  );
+};
 
 const App = () => {
   // save clicks of each button to its own state
@@ -43,6 +65,7 @@ const App = () => {
     );
     return sum / arr.length;
   };
+
   return (
     <div>
       <h1>give feedback</h1>
@@ -59,11 +82,14 @@ const App = () => {
         text="bad"
       ></Button>
       <h1>statistics</h1>
-      <Display name="good" value={good}></Display>
-      <Display name="neutral" value={neutral}></Display>
-      <Display name="bad" value={bad}></Display>
-      <Display name="average" value={computeAverage(allValues)}></Display>
-      <Display name="positive" value={countPositives(allValues)}></Display>
+      <Statistics
+        good={good}
+        bad={bad}
+        neutral={neutral}
+        allValues={allValues}
+        computeAverage={computeAverage}
+        countPositives={countPositives}
+      ></Statistics>
     </div>
   );
 };
