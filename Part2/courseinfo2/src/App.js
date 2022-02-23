@@ -1,22 +1,27 @@
 import { useState } from "react";
 const Part = ({ section }) => (
-  <p>
+  <li>
     {section.name} {section.exercises}
-  </p>
+  </li>
 );
-const Content = ({ parts }) => (
-  <>
-    <Part section={parts[0]}></Part>
-    <Part section={parts[1]}></Part>
-    <Part section={parts[2]}></Part>
-  </>
-);
+
+const Content = ({ parts }) =>
+  parts.map((part) => <Part section={part}></Part>);
+// const Content = ({ parts }) => (
+//   <>
+//     <Part section={parts[0]}></Part>
+//     <Part section={parts[1]}></Part>
+//     <Part section={parts[2]}></Part>
+//   </>
+// );
 
 const Header = ({ text }) => <h1>{text}</h1>;
 const Course = ({ course }) => (
   <>
     <Header text={course.name}></Header>
-    <Content parts={course.parts}></Content>
+    <ul>
+      <Content parts={course.parts}></Content>
+    </ul>
   </>
 );
 
