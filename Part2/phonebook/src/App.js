@@ -1,5 +1,8 @@
 import { eventWrapper } from "@testing-library/user-event/dist/utils";
 import { useState } from "react";
+import Persons from "./components/Persons";
+import PersonsForm from "./components/PersonsForm";
+import Filter from "./components/Filter";
 
 const DisplayItem = ({ name, number }) => (
   <div>
@@ -15,6 +18,12 @@ const App = () => {
   ]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+  const [newFilter, setNewFilter] = useState("");
+  const [filteredPersons, setFilteredPersons] = useState(persons);
+
+  const filterPerson = (name, filter) => {
+    return name.slice(0, filter.length).toUpperCase() === filter.toUpperCase();
+  };
 
   const checkDuplicates = () => {
     const containsDuplicates =
@@ -31,10 +40,22 @@ const App = () => {
   const handleNoteChange = (event) => {
     setNewName(event.target.value);
   };
+  const handleFilterChange = (event) => {
+    setNewFilter(event.target.value);
+    const filter = event.target.value;
+    setFilteredPersons(
+      persons.filter((person) => filterPerson(person.name, filter))
+    );
+  };
   const addNote = (event) => {
     event.preventDefault();
     if (!checkDuplicates()) {
       setPersons(persons.concat({ name: newName, number: newNumber }));
+      if (filterPerson(newName, newFilter)) {
+        setFilteredPersons(
+          filteredPersons.concat({ name: newName, number: newNumber })
+        );
+      }
     }
     setNewName("");
     setNewNumber("");
@@ -43,29 +64,21 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addNote}>
-        <input value={newFilter} onChange={handleFilterChange}></input>
-        <div>
-          <div>
-            name:
-            <input value={newName} onChange={handleNoteChange}></input>
-          </div>
-          <div>
-            number:
-            <input value={newNumber} onChange={handleNumberChange}></input>
-          </div>
-        </div>
-        <button type="submit">add</button>
-      </form>
-      <h2>Numbers</h2>
+      <Filter
+        newFilter={newFilter}
+        handleFilterChange={handleFilterChange}
+      ></Filter>
 
-      {persons.map((person) => (
-        <DisplayItem
-          key={person.name}
-          name={person.name}
-          number={person.number}
-        />
-      ))}
+      <PersonsForm
+        addNote={addNote}
+        newName={newName}
+        handleNoteChange={handleNoteChange}
+        newNumber={newNumber}
+        handleNumberChange={handleNumberChange}
+      ></PersonsForm>
+
+      <h2>Numbers</h2>
+      <Persons persons={filteredPersons}></Persons>
     </div>
   );
 };
