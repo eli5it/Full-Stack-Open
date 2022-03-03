@@ -33,7 +33,10 @@ const App = () => {
       find countries
       <input type={"search"} onChange={handleFilterChange}></input>
       <div>{inputMessage}</div>
-      <Content list={selectedCountries} filter={filter}></Content>
+      <Content
+        list={selectedCountries}
+        setSelectedCountries={setSelectedCountries}
+      ></Content>
     </div>
   );
 };

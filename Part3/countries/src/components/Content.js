@@ -1,4 +1,6 @@
-const Content = ({ list }) => {
+import { type } from "@testing-library/user-event/dist/type";
+
+const Content = ({ list, setSelectedCountries }) => {
   if (list.length > 10) {
     return <div>Try narrowing your search criteria</div>;
   } else if (list.length === 1) {
@@ -6,7 +8,12 @@ const Content = ({ list }) => {
   } else if (list.length === 0) {
     return <div>No countries found</div>;
   } else {
-    return <RenderList list={list}></RenderList>;
+    return (
+      <RenderList
+        list={list}
+        setSelectedCountries={setSelectedCountries}
+      ></RenderList>
+    );
   }
 };
 
@@ -22,7 +29,6 @@ const RenderLanguages = ({ languages }) => {
 const RenderLanguage = ({ language }) => <li>{language}</li>;
 
 const RenderCountry = ({ country }) => {
-  console.log(country);
   const languages = country.languages;
   const languageArray = Object.values(languages);
   return (
@@ -37,17 +43,30 @@ const RenderCountry = ({ country }) => {
   );
 };
 
-const RenderList = ({ list }) => {
+const RenderList = ({ list, setSelectedCountries }) => {
   return (
     <>
       {list.map((country) => (
         <RenderListItem
           key={country.name.common}
-          name={country.name.common}
+          country={country}
+          setSelectedCountries={setSelectedCountries}
         ></RenderListItem>
       ))}
     </>
   );
 };
-const RenderListItem = ({ name }) => <div>{name}</div>;
+
+const RenderListItem = ({ country, setSelectedCountries }) => {
+  const onClick = (event) => {
+    setSelectedCountries([country]);
+  };
+  return (
+    <div>
+      {country.name.common}
+      <button onClick={onClick}>show</button>
+    </div>
+  );
+};
+
 export default Content;
