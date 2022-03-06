@@ -1,21 +1,41 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Content from "./components/Content";
-
+import countryService from "./services/countries";
 const App = () => {
   const [countries, setCountries] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [filter, setFilter] = useState("");
   const [selectedCountries, setSelectedCountries] = useState([]);
-  // maximum countries specified by search query
-  const maxCountries = 10;
-  // returns array of country objects matching the search query
+  const [weather, setWeather] = useState({});
+
+  const fetchWeatherdata = (country) => {
+    const coordinates = country.capitalInfo.latlng;
+    countryService.getWeather(coordinates).then((data) => {
+      const degressCelsius = Math.round(data.main.temp - 273.15);
+      const windSpeed = data.wind.speed;
+      const weatherIcon = data.weather[0].icon;
+      console.log(weatherIcon);
+      const iconUrl = `https://openweathermap.org/img/wn/${weatherIcon}@2x.png`;
+      const weatherObject = {
+        temp: degressCelsius,
+        windSpeed: windSpeed,
+        iconUrl: iconUrl,
+      };
+      setWeather(weatherObject);
+    });
+  };
+
   const filterCountries = (filter) => {
     const filteredCountries = countries.filter((country) => {
       const upCasedName = country.name.common.toUpperCase();
       return upCasedName.includes(filter.toUpperCase());
     });
     setSelectedCountries(filteredCountries);
+    if (filteredCountries.length === 1) {
+      const country = filteredCountries[0];
+      fetchWeatherdata(country);
+    }
   };
   useEffect(() => {
     axios.get("https://restcountries.com/v3.1/all").then((response) => {
@@ -28,6 +48,7 @@ const App = () => {
     setFilter(event.target.value);
     filterCountries(event.target.value);
   };
+
   return (
     <div>
       find countries
@@ -36,6 +57,8 @@ const App = () => {
       <Content
         list={selectedCountries}
         setSelectedCountries={setSelectedCountries}
+        weather={weather}
+        fetchWeatherData={fetchWeatherdata}
       ></Content>
     </div>
   );

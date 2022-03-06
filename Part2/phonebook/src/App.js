@@ -1,26 +1,23 @@
-import { eventWrapper } from "@testing-library/user-event/dist/utils";
 import { useEffect, useState } from "react";
 import Persons from "./components/Persons";
 import PersonsForm from "./components/PersonsForm";
 import Filter from "./components/Filter";
-import axios from "axios";
+import personService from "./services/persons";
+import Notification from "./components/Notification";
 
-const DisplayItem = ({ name, number }) => (
-  <div>
-    {name} {number}
-  </div>
-);
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newFilter, setNewFilter] = useState("");
   const [filteredPersons, setFilteredPersons] = useState(persons);
+  const [message, setMessage] = useState(null);
+  const [notificationStyle, setNotificationStyle] = useState("success");
 
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then((response) => {
-      setPersons(response.data);
-      setFilteredPersons(response.data);
+    personService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
+      setFilteredPersons(initialPersons);
     });
   }, []);
 
@@ -31,10 +28,6 @@ const App = () => {
   const checkDuplicates = () => {
     const containsDuplicates =
       persons.filter((person) => person.name === newName).length > 0;
-
-    if (containsDuplicates) {
-      alert(`${newName} is already added to phonebook.`);
-    }
     return containsDuplicates;
   };
   const handleNumberChange = (event) => {
@@ -50,28 +43,86 @@ const App = () => {
       persons.filter((person) => filterPerson(person.name, filter))
     );
   };
+
+  const filterNewPerson = (newObject) => {
+    if (filterPerson(newName, newFilter)) {
+      setFilteredPersons(filteredPersons.concat(newObject));
+    }
+  };
+  const updatePersonState = (personState, newPerson) => {
+    return personState.map((person) =>
+      person.name === newName ? newPerson : person
+    );
+  };
+  const displayNotification = (message, style) => {
+    setMessage(message);
+    setNotificationStyle(style);
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
+  };
+
   const addNote = (event) => {
+    const newObject = { name: newName, number: newNumber };
     event.preventDefault();
-    if (!checkDuplicates()) {
-      setPersons(persons.concat({ name: newName, number: newNumber }));
-      if (filterPerson(newName, newFilter)) {
-        setFilteredPersons(
-          filteredPersons.concat({ name: newName, number: newNumber })
-        );
+    const isDuplicate = checkDuplicates();
+    if (!isDuplicate) {
+      personService.create(newObject).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+        filterNewPerson(newObject);
+        displayNotification(`${newName} Added`, "success");
+        setNewName("");
+        setNewNumber("");
+      });
+    } else if (isDuplicate) {
+      const message = `${newName} is already in the phonebook, replace the old number with a new one?`;
+      const oldPerson = persons.find((person) => person.name === newName);
+      if (window.confirm(message)) {
+        personService
+          .replace(newObject, oldPerson.id)
+          .then((returnedPerson) => {
+            displayNotification(`${returnedPerson.name} updated`);
+            setPersons(updatePersonState(persons, returnedPerson));
+            setFilteredPersons(
+              updatePersonState(filteredPersons, returnedPerson)
+            );
+          })
+          .catch((error) => {
+            displayNotification(
+              "note has already been deleted from the server",
+              "failure"
+            );
+          });
       }
     }
-    setNewName("");
-    setNewNumber("");
+  };
+  const deletePerson = (name) => {
+    if (window.confirm("Do you really want to delete this item?")) {
+      const personToDelete = persons.find((person) => person.name == name);
+      personService.deletePerson(personToDelete).then(() => {
+        const updatedPersonArray = persons.filter(
+          (person) => person.name !== name
+        );
+        setPersons(updatedPersonArray);
+        const updatedFilteredPersons = filteredPersons.filter(
+          (person) => person.name !== name
+        );
+        setFilteredPersons(updatedFilteredPersons);
+      });
+    }
   };
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification
+        message={message}
+        notificationStyle={notificationStyle}
+      ></Notification>
       <Filter
         newFilter={newFilter}
         handleFilterChange={handleFilterChange}
       ></Filter>
-
       <PersonsForm
         addNote={addNote}
         newName={newName}
@@ -81,7 +132,11 @@ const App = () => {
       ></PersonsForm>
 
       <h2>Numbers</h2>
-      <Persons persons={filteredPersons}></Persons>
+      <Persons
+        persons={filteredPersons}
+        setPersons={setPersons}
+        deletePerson={deletePerson}
+      ></Persons>
     </div>
   );
 };

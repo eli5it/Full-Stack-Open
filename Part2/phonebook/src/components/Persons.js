@@ -1,4 +1,4 @@
-const Persons = ({ persons }) => {
+const Persons = ({ persons, deletePerson }) => {
   return (
     <>
       {persons.map((person) => (
@@ -6,16 +6,20 @@ const Persons = ({ persons }) => {
           key={person.name}
           name={person.name}
           number={person.number}
+          deletePerson={deletePerson}
         />
       ))}
     </>
   );
 };
 
-const DisplayItem = ({ name, number }) => (
-  <div>
-    {name} {number}
-  </div>
-);
+const DisplayItem = ({ name, number, deletePerson }) => {
+  return (
+    <div>
+      {name} {number}
+      <button onClick={() => deletePerson(name)}>delete</button>
+    </div>
+  );
+};
 
 export default Persons;
