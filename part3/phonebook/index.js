@@ -1,6 +1,8 @@
 const { response, request } = require("express");
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
+
 morgan.token("info", function (req, res) {
   const stringData = JSON.stringify(req.body);
   return stringData;
@@ -17,8 +19,9 @@ const morganInfo = morgan(function (tokens, req, res) {
     tokens.info(req, res),
   ].join(" ");
 });
-const morganLogger = morgan(":info");
 const app = express();
+app.use(cors());
+
 app.use(express.json());
 app.use(morganInfo);
 
@@ -112,7 +115,7 @@ const unknownEndpoint = (request, response) => {
 
 app.use(unknownEndpoint);
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
