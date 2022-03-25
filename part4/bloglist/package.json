@@ -1,5 +1,5 @@
 {
-  "name": "phonebook",
+  "name": "bloglist",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,13 +8,13 @@
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
-  "author": "Elijah Davis",
+  "author": "Eli Davis",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
     "express": "^4.17.3",
-    "mongoose": "^6.2.7",
-    "morgan": "^1.10.0"
+    "mongoose": "^6.2.8"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"

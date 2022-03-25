@@ -67,13 +67,18 @@ const App = () => {
     event.preventDefault();
     const isDuplicate = checkDuplicates();
     if (!isDuplicate) {
-      personService.create(newObject).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson));
-        filterNewPerson(newObject);
-        displayNotification(`${newName} Added`, "success");
-        setNewName("");
-        setNewNumber("");
-      });
+      personService
+        .create(newObject)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+          filterNewPerson(newObject);
+          displayNotification(`${newName} Added`, "success");
+          setNewName("");
+          setNewNumber("");
+        })
+        .catch((error) => {
+          console.log(error.responseData);
+        });
     } else if (isDuplicate) {
       const message = `${newName} is already in the phonebook, replace the old number with a new one?`;
       const oldPerson = persons.find((person) => person.name === newName);
@@ -98,7 +103,7 @@ const App = () => {
   };
   const deletePerson = (name) => {
     if (window.confirm("Do you really want to delete this item?")) {
-      const personToDelete = persons.find((person) => person.name == name);
+      const personToDelete = persons.find((person) => person.name === name);
       personService.deletePerson(personToDelete).then(() => {
         const updatedPersonArray = persons.filter(
           (person) => person.name !== name
