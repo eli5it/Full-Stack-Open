@@ -68,6 +68,14 @@ test('likes property defaults to zero', async () => {
   expect(blogObject.likes).toEqual(0);
 });
 
+test('invalid blog not added to db', async () => {
+  const newBlog = {
+    author: 'Scott Alexander',
+    likes: 69,
+  };
+  await api.post('/api/blogs').send(newBlog).expect(400);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
