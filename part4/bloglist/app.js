@@ -17,6 +17,6 @@ mongoose
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/notes', blogsRouter);
+app.use('/api/blogs', blogsRouter);
 
 module.exports = app;
