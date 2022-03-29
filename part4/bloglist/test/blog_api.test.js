@@ -45,7 +45,7 @@ test('a valid blog can be added', async () => {
     .expect(201)
     .expect('Content-Type', /application\/json/);
 
-  const blogsAtEnd = await helper.blogsinDb();
+  const blogsAtEnd = await helper.blogsInDb();
   expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
 
   const titles = blogsAtEnd.map((blog) => blog.title);
@@ -74,6 +74,29 @@ test('invalid blog not added to db', async () => {
     likes: 69,
   };
   await api.post('/api/blogs').send(newBlog).expect(400);
+});
+test('a blog can be deleted from db', async () => {
+  const blogsAtStart = await helper.blogsInDb();
+  const blogToDelete = blogsAtStart[0];
+
+  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+  const blogsAtEnd = await helper.blogsInDb();
+
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
+});
+test('a blog can be updated', async () => {
+  const allBlogs = await helper.blogsInDb();
+  const sampleBlog = allBlogs[0];
+  sampleBlog.likes = 125;
+  const updatedBlog = await api
+    .put(`/api/blogs/${sampleBlog.id}`)
+    .send(sampleBlog)
+    .expect('Content-Type', /application\/json/);
+
+  const processedBlog = JSON.parse(JSON.stringify(sampleBlog));
+
+  expect(updatedBlog.body).toEqual(processedBlog);
 });
 
 afterAll(() => {
