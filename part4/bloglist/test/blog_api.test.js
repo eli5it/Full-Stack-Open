@@ -52,6 +52,22 @@ test('a valid blog can be added', async () => {
   expect(titles).toContain('Astral Codex Ten');
 });
 
+test('likes property defaults to zero', async () => {
+  const newBlog = {
+    title: 'Astral Codex Ten',
+    author: 'Scott Alexander',
+    url: 'https://astralcodexten.substack.com/',
+  };
+
+  const result = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
+  const blogObject = result.body;
+  expect(blogObject.likes).toEqual(0);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
