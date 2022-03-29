@@ -22,6 +22,13 @@ test('blogs are returned as json', async () => {
     .expect('Content-Type', /application\/json/);
 });
 
+test('id property is defined', async () => {
+  const contents = await Blog.find({});
+  const newContents = contents.map((blog) => blog.toJSON());
+  const potentialID = newContents[0].id;
+  expect(potentialID).toBeDefined();
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
