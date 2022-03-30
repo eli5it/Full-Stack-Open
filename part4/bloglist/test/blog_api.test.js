@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
 const supertest = require('supertest');
-const app = require('../app');
-const helper = require('./test_helper');
-const Blog = require('../models/blog');
+const bcrypt = require('bcrypt');
 
+const helper = require('./test_helper');
+const app = require('../app');
 const api = supertest(app);
+
+const Blog = require('../models/blog');
+const User = require('../models/user');
 
 beforeEach(async () => {
   await Blog.deleteMany({});
@@ -97,6 +100,34 @@ test('a blog can be updated', async () => {
   const processedBlog = JSON.parse(JSON.stringify(sampleBlog));
 
   expect(updatedBlog.body).toEqual(processedBlog);
+});
+
+describe('when there is initially one user in db', () => {
+  beforeEach(async () => {
+    await User.deleteMany({});
+
+    const passwordHash = await bcrypt.hash('sekret', 10);
+    const user = new User({ username: 'root', passwordHash });
+
+    await user.save();
+  });
+  test('creation fails with propercode for non-unique username', async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      username: 'root',
+      name: 'Superuser',
+      password: 'Dont let me through',
+    };
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    expect(result.body.error).toContain('username must be unique');
+  });
 });
 
 afterAll(() => {
