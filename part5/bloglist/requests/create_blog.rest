@@ -1,0 +1,11 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkVsaSIsImlkIjoiNjI0ZjkxYzMzMDAxMzcwNzg2YTdlNGI1IiwiaWF0IjoxNjQ5Mzg0NjM2fQ.AgQF84BgsDRaUjPCScDYiBNAey6JAZFeZsN3WYXjZuc
+
+
+{
+    "title": "test blog",
+    "author": "Eli Davis",
+    "url": "www.google.com",
+    "likes": 69
+}
