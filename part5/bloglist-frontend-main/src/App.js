@@ -28,6 +28,14 @@ const App = () => {
 
   const blogFormRef = useRef();
 
+  const sortBlogs = (blogs) => {
+    console.log('anything');
+    const sortedBlogs = blogs.sort((a, b) => {
+      return a.likes - b.likes;
+    });
+    return sortedBlogs;
+  };
+
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -39,7 +47,7 @@ const App = () => {
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user));
       blogService.setToken(user.token);
       const allBlogs = await blogService.getAll();
-      setBlogs(allBlogs);
+      setBlogs(sortBlogs(allBlogs));
       setUser(user);
       setUsername('');
       setPassword('');
