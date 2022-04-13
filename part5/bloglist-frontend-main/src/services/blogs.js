@@ -25,6 +25,12 @@ const create = async (newObject) => {
   return response.data;
 };
 
+const deleteBlog = async (blog) => {
+  const newUrl = `${baseUrl}/${blog.id}`;
+  const response = await axios.delete(newUrl, config);
+  return response.data;
+};
+
 const addLike = async (blogToUpdate) => {
   blogToUpdate.likes++;
   // need to find blog id
@@ -32,4 +38,4 @@ const addLike = async (blogToUpdate) => {
   const response = await axios.put(newURL, blogToUpdate, config);
   return response.data;
 };
-export default { getAll, create, setToken, addLike };
+export default { getAll, create, setToken, addLike, deleteBlog };

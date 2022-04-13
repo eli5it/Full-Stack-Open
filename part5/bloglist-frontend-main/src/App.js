@@ -14,7 +14,6 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  const [blogFormVisible, setBlogFormVisible] = useState(false);
 
   useEffect(() => {
     const loggedUser = window.localStorage.getItem('loggedBlogAppUser');
@@ -84,21 +83,22 @@ const App = () => {
     }
   };
 
-  const blogForm = () => {
-    const hideWhenVisible = { display: blogFormVisible ? 'none' : '' };
-    const showWhenVisible = { display: blogFormVisible ? '' : 'none' };
+  const deleteBlog = async (blogToDelete) => {
+    try {
+      const deletedBlog = await blogService.deleteBlog(blogToDelete);
+      console.log(deletedBlog);
+      setSuccessMessage(`${blogToDelete.title} was succesfully deleted`);
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 5000);
 
-    return (
-      <div>
-        <div style={hideWhenVisible}>
-          <button onClick={() => setBlogFormVisible(true)}>new</button>
-        </div>
-        <div style={showWhenVisible}>
-          <BlogForm createBlog={addBlog}></BlogForm>
-          <button onClick={() => setBlogFormVisible(false)}>cancel</button>
-        </div>
-      </div>
-    );
+      setBlogs(blogs.filter((blog) => blog.id !== blogToDelete.id));
+    } catch {
+      setErrorMessage(`Cannot delete blog ${blogToDelete.title}`);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
   };
 
   return (
@@ -129,7 +129,13 @@ const App = () => {
             <BlogForm createBlog={addBlog}></BlogForm>
           </Togglable>
           {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} addLike={blogService.addLike} />
+            <Blog
+              key={blog.id}
+              blog={blog}
+              addLike={blogService.addLike}
+              deleteBlog={deleteBlog}
+              user={user}
+            />
           ))}
         </div>
       )}
