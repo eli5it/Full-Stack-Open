@@ -34,7 +34,13 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
       <div style={showWhenVisible} className='showWhenVisible'>
         <div>{blog.url}</div>
         <div>
-          likes {likes} <button onClick={() => updateLikeCount()}>like</button>
+          likes {likes}{' '}
+          <button
+            onClick={() => updateLikeCount()}
+            className={'Increment-Likes'}
+          >
+            like
+          </button>
         </div>
         <div>{blog.author}</div>
         {blog.user.username === user.username && (

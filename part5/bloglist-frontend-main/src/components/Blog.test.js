@@ -6,6 +6,8 @@ import Blog from './Blog';
 
 describe('<Blog />', () => {
   let container;
+  const mockHandler = jest.fn();
+
   const blog = {
     title: 'Hello Dolly',
     author: 'Elijah Davis',
@@ -20,7 +22,9 @@ describe('<Blog />', () => {
   };
 
   beforeEach(() => {
-    container = render(<Blog blog={blog} user={user}></Blog>).container;
+    container = render(
+      <Blog blog={blog} user={user} addLike={mockHandler}></Blog>
+    ).container;
   });
   test('renders only title and author', () => {
     const element = container.querySelector('.authorTitle');
@@ -34,5 +38,12 @@ describe('<Blog />', () => {
 
     const visibleElement = container.querySelector('.showWhenVisible');
     expect(visibleElement).toHaveStyle('display: block');
+  });
+
+  test('clicking button twice calls event handler twice', async () => {
+    const button = container.querySelector('.Increment-Likes');
+    userEvent.click(button);
+    userEvent.click(button);
+    expect(mockHandler.mock.calls).toHaveLength(2);
   });
 });
