@@ -1,27 +1,27 @@
-import { useState } from 'react';
+import { useState } from 'react'
 
 const Blog = ({ blog, addLike, deleteBlog, user }) => {
-  const [visible, setVisibility] = useState(false);
-  const [likes, setLikes] = useState(blog.likes);
-  const showWhenVisible = { display: visible ? '' : 'none' };
+  const [visible, setVisibility] = useState(false)
+  const [likes, setLikes] = useState(blog.likes)
+  const showWhenVisible = { display: visible ? '' : 'none' }
 
-  const buttonLabel = visible ? 'hide' : 'view';
+  const buttonLabel = visible ? 'hide' : 'view'
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5,
-  };
+  }
 
   const toggleVisibility = () => {
-    setVisibility(!visible);
-  };
+    setVisibility(!visible)
+  }
 
   const updateLikeCount = () => {
-    addLike(blog);
-    setLikes(likes + 1);
-  };
+    addLike(blog)
+    setLikes(likes + 1)
+  }
 
   return (
     <div style={blogStyle}>
@@ -40,7 +40,7 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Blog;
+export default Blog
