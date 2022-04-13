@@ -1,35 +1,37 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
 const Blog = ({ blog, addLike, deleteBlog, user }) => {
-  const [visible, setVisibility] = useState(false)
-  const [likes, setLikes] = useState(blog.likes)
-  const showWhenVisible = { display: visible ? '' : 'none' }
+  const [visible, setVisibility] = useState(false);
+  const [likes, setLikes] = useState(blog.likes);
+  const showWhenVisible = { display: visible ? '' : 'none' };
 
-  const buttonLabel = visible ? 'hide' : 'view'
+  const buttonLabel = visible ? 'hide' : 'view';
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5,
-  }
+  };
 
   const toggleVisibility = () => {
-    setVisibility(!visible)
-  }
+    setVisibility(!visible);
+  };
 
   const updateLikeCount = () => {
-    addLike(blog)
-    setLikes(likes + 1)
-  }
+    addLike(blog);
+    setLikes(likes + 1);
+  };
 
   return (
     <div style={blogStyle}>
-      <div>
+      <div className='authorTitle'>
         {blog.title} {blog.author}{' '}
-        <button onClick={toggleVisibility}>{buttonLabel}</button>
+        <button onClick={toggleVisibility} className='Toggle-Visibility'>
+          {buttonLabel}
+        </button>
       </div>
-      <div style={showWhenVisible}>
+      <div style={showWhenVisible} className='showWhenVisible'>
         <div>{blog.url}</div>
         <div>
           likes {likes} <button onClick={() => updateLikeCount()}>like</button>
@@ -40,7 +42,7 @@ const Blog = ({ blog, addLike, deleteBlog, user }) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Blog
+export default Blog;

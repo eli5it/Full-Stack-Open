@@ -4,7 +4,8 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Blog from './Blog';
 
-test('renders only title and author', () => {
+describe('<Blog />', () => {
+  let container;
   const blog = {
     title: 'Hello Dolly',
     author: 'Elijah Davis',
@@ -18,10 +19,20 @@ test('renders only title and author', () => {
     username: 'Elijah Davis',
   };
 
-  const { container } = render(<Blog blog={blog} user={user}></Blog>);
+  beforeEach(() => {
+    container = render(<Blog blog={blog} user={user}></Blog>).container;
+  });
+  test('renders only title and author', () => {
+    const element = container.querySelector('.authorTitle');
+    const invisibleElement = container.querySelector('.showWhenVisible');
+    expect(element).toBeDefined();
+    expect(invisibleElement).toHaveStyle('display: none');
+  });
+  test('render likes and url after button click', () => {
+    const button = container.querySelector('.Toggle-Visibility');
+    userEvent.click(button);
 
-  const element = container.querySelector('.authorTitle');
-  const invisibleElement = container.querySelector('.showWhenVisible');
-  expect(element).toBeDefined();
-  expect(invisibleElement).toBeNull();
+    const visibleElement = container.querySelector('.showWhenVisible');
+    expect(visibleElement).toHaveStyle('display: block');
+  });
 });
