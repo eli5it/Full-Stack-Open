@@ -15,4 +15,22 @@ describe('Blog app', function () {
   it('Login form is shown', function () {
     cy.contains('Log in to application');
   });
+
+  describe('Login', function () {
+    it('succeeds with correct credentials', function () {
+      cy.get('#username').type('Eli');
+      cy.get('#password').type('password');
+      cy.contains('login').click();
+
+      cy.contains('Eli Davis logged in');
+    });
+    it('fails with wrong credentials', function () {
+      cy.get('#username').type('Eli');
+      cy.get('#password').type('wrongPassword');
+      cy.contains('login').click();
+
+      cy.contains('Wrong username or password');
+      cy.get('.error').should('have.css', 'border-color', 'rgb(255, 0, 0)');
+    });
+  });
 });
