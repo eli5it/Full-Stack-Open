@@ -1,47 +1,50 @@
-const config = require('./utils/config')
-const express = require('express')
-require('express-async-errors')
-const bodyParser = require('body-parser')
-const morgan = require('morgan')
-const app = express()
-const cors = require('cors')
-const logger = require('./utils/logger')
-const blogRouter = require('./controllers/blogs')
-const usersRouter = require('./controllers/users')
-const loginRouter = require('./controllers/login')
-const middleware = require('./utils/middleware')
-const mongoose = require('mongoose')
+const config = require('./utils/config');
+const express = require('express');
+require('express-async-errors');
+const bodyParser = require('body-parser');
+const morgan = require('morgan');
+const app = express();
+const cors = require('cors');
+const logger = require('./utils/logger');
+const blogRouter = require('./controllers/blogs');
+const usersRouter = require('./controllers/users');
+const loginRouter = require('./controllers/login');
+const testingRouter = require('./controllers/testing');
 
-const url = config.MONGODB_URI
-logger.info('connecting to', url)
+const middleware = require('./utils/middleware');
+const mongoose = require('mongoose');
 
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+const url = config.MONGODB_URI;
+logger.info('connecting to', url);
+
+mongoose
+  .connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
-    logger.info('connected to MongoDB')
+    logger.info('connected to MongoDB');
   })
   .catch((error) => {
-    logger.info('error connecting to MongoDB:', error.message)
-  })
+    logger.info('error connecting to MongoDB:', error.message);
+  });
 
-morgan.token('body', function (req) { return JSON.stringify(req.body) })
+morgan.token('body', function (req) {
+  return JSON.stringify(req.body);
+});
 
-app.use(bodyParser.json())
-app.use(cors())
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
+app.use(bodyParser.json());
+app.use(cors());
+app.use(
+  morgan(':method :url :status :res[content-length] - :response-time ms :body')
+);
 
-app.use('/api/login', loginRouter)
-app.use('/api/users', usersRouter)
+app.use('/api/login', loginRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/testing', testingRouter);
 
-if (process.env.NODE_ENV === 'test') {
-  const testingRouter = require('./controllers/testing')
-  app.use('/api/testing', testingRouter)
-}
+app.use(middleware.tokenExtractor);
+app.use(middleware.tokenValidator);
 
-app.use(middleware.tokenExtractor)
-app.use(middleware.tokenValidator)
+app.use('/api/blogs', blogRouter);
 
-app.use('/api/blogs', blogRouter)
+app.use(middleware.errorHandler);
 
-app.use(middleware.errorHandler)
-
-module.exports = app
+module.exports = app;
