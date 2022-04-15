@@ -24,7 +24,6 @@ const reducer = (state = initialState, action) => {
   console.log('action', action);
   switch (action.type) {
     case 'NEW_ANECDOTE':
-      console.log('new state should be', [...state, action.data]);
       return [...state, action.data.anecdote];
     case 'VOTE': {
       const id = action.data.id;
@@ -33,9 +32,13 @@ const reducer = (state = initialState, action) => {
         ...chosenAnecdote,
         votes: chosenAnecdote.votes + 1,
       };
-      return state.map((anecdote) =>
+      const unsortedState = state.map((anecdote) =>
         anecdote.id !== id ? anecdote : changedAnecdote
       );
+      const sortedState = unsortedState.sort((a, b) => {
+        return a.votes - b.votes;
+      });
+      return sortedState;
     }
   }
 
