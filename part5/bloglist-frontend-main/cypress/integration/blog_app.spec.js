@@ -32,5 +32,23 @@ describe('Blog app', function () {
       cy.contains('Wrong username or password');
       cy.get('.error').should('have.css', 'border-color', 'rgb(255, 0, 0)');
     });
+    describe('When logged in', function () {
+      beforeEach(function () {
+        cy.login({
+          username: 'Eli',
+          password: 'password',
+        });
+      });
+
+      it('A blog can be created', function () {
+        cy.contains('new blog').click();
+        cy.get('#title').type('a blog created by cypress');
+        cy.get('#author').type('Eli Davis');
+        cy.get('#url').type('https://github.com/eli5it/Full-Stack-Open');
+        cy.get('#create-button').click();
+        cy.contains('succesfully created');
+        cy.get('.success').should('have.css', 'border-color', 'rgb(0, 128, 0)');
+      });
+    });
   });
 });
