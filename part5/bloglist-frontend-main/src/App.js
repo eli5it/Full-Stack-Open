@@ -70,6 +70,7 @@ const App = () => {
     blogFormRef.current.toggleVisibility();
     try {
       const createdBlog = await blogService.create(blogObject);
+      console.log('created', createdBlog);
       setSuccessMessage(createdBlog.title + ' was succesfully created');
       setTimeout(() => {
         setSuccessMessage(null);
