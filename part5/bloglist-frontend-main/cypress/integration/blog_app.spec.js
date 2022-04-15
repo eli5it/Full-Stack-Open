@@ -47,6 +47,7 @@ describe('Blog app', function () {
         cy.get('#url').type('https://github.com/eli5it/Full-Stack-Open');
         cy.get('#create-button').click();
         cy.contains('succesfully created');
+        cy.contains('view');
         cy.get('.success').should('have.css', 'border-color', 'rgb(0, 128, 0)');
       });
     });
