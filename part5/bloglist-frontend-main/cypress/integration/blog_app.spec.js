@@ -41,14 +41,28 @@ describe('Blog app', function () {
       });
 
       it('A blog can be created', function () {
-        cy.contains('new blog').click();
-        cy.get('#title').type('a blog created by cypress');
-        cy.get('#author').type('Eli Davis');
-        cy.get('#url').type('https://github.com/eli5it/Full-Stack-Open');
-        cy.get('#create-button').click();
+        cy.createBlog({
+          title: 'a blog created by cypress',
+          author: 'Eli Davis',
+          url: 'https://github.com/eli5it/Full-Stack-Open',
+        });
         cy.contains('succesfully created');
         cy.contains('view');
         cy.get('.success').should('have.css', 'border-color', 'rgb(0, 128, 0)');
+      });
+      describe('and a blog has been created', function () {
+        beforeEach(function () {
+          cy.createBlog({
+            title: 'a blog created by cypress',
+            author: 'Eli Davis',
+            url: 'https://github.com/eli5it/Full-Stack-Open',
+          });
+        });
+        it('its likes can be incremented', function () {
+          cy.contains('view').click();
+          cy.get('.Increment-Likes').click();
+          cy.contains(1);
+        });
       });
     });
   });
