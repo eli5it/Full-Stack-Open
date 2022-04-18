@@ -13,13 +13,16 @@ const AnecdoteList = () => {
     }
     return anecdotes;
   });
+  const sortedAnecdotes = [...anecdotes].sort((a, b) => {
+    return a.votes - b.votes;
+  });
   const vote = (id, content) => {
     dispatch(voteOnAnecdote(id));
     dispatch(setNotification(`voted on ${content}`, 5));
   };
   return (
     <div>
-      {anecdotes.map((anecdote) => (
+      {sortedAnecdotes.map((anecdote) => (
         <div key={anecdote.id}>
           <div>{anecdote.content}</div>
           <div>
