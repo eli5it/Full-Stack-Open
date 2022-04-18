@@ -1,9 +1,24 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialMessage = 'sample message';
+const notificationSlice = createSlice({
+  name: 'notification',
+  initialState: null,
+  reducers: {
+    displayAnecdote(state, action) {
+      const content = `Added ${action.payload}`;
+      return content;
+    },
+    displayVote(state, action) {
+      const content = `Voted on ${action.payload}`;
+      return content;
+    },
+    clearNotification(state, action) {
+      return null;
+    },
+  },
+});
 
-const notificationReducer = (state = initialMessage, action) => {
-  return state;
-};
+export const { displayVote, displayAnecdote, clearNotification } =
+  notificationSlice.actions;
 
-export default notificationReducer;
+export default notificationSlice.reducer;
