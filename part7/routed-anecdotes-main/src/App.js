@@ -113,6 +113,11 @@ const CreateNew = (props) => {
       props.setNotification(null);
     }, 5000);
   };
+  const resetForm = () => {
+    author.reset();
+    content.reset();
+    info.reset();
+  };
 
   return (
     <div>
@@ -120,17 +125,20 @@ const CreateNew = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input {...content} name='content' />
+          <input {...content} reset='' name='content' />
         </div>
         <div>
           author
-          <input {...author} name='author' />
+          <input {...author} reset='' name='author' />
         </div>
         <div>
           url for more info
-          <input {...info} name='info' />
+          <input {...info} name='info' reset='' />
         </div>
-        <button>create</button>
+        <input type='submit' name='create' value='create' />
+        <button type='button' onClick={() => resetForm()}>
+          reset
+        </button>
       </form>
     </div>
   );
