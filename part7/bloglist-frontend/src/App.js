@@ -11,6 +11,8 @@ import {
   clearNotification,
   setNotification,
 } from "./reducers/notificationReducer";
+import blogs from "./services/blogs";
+import { initializeBlogs } from "./reducers/blogReducer";
 
 const App = () => {
   const [allBlogs, setAllBlogs] = useState([]);
@@ -20,8 +22,9 @@ const App = () => {
   const [user, setUser] = useState(null);
 
   const notification = useSelector(({ notifications }) => notifications);
-  const blogFormRef = React.createRef();
   const dispatch = useDispatch();
+
+  const blogFormRef = React.createRef();
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
@@ -30,8 +33,12 @@ const App = () => {
       setUser(user);
       blogService.setToken(user.token);
       getAllBlogs();
+      dispatch(initializeBlogs());
     }
   }, []);
+
+  const stateBlogs = useSelector(({ blogs }) => blogs);
+  console.log(stateBlogs);
 
   const getAllBlogs = async () => {
     const blogs = await blogService.getAll();
