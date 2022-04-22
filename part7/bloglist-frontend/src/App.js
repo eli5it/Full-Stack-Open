@@ -6,18 +6,22 @@ import BlogForm from "./components/BlogForm";
 import Togglable from "./components/Togglable";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
-import store from "./store";
-import { Provider } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  clearNotification,
+  setNotification,
+} from "./reducers/notificationReducer";
 
 const App = () => {
   const [allBlogs, setAllBlogs] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
+
   const [user, setUser] = useState(null);
 
+  const notification = useSelector(({ notifications }) => notifications);
   const blogFormRef = React.createRef();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogappUser");
@@ -48,10 +52,9 @@ const App = () => {
       setUsername("");
       setPassword("");
     } catch (exception) {
-      setErrorMessage("Wrong credentials");
-      setSuccessMessage(null);
+      dispatch(setNotification("Wrong credentials"));
       setTimeout(() => {
-        setErrorMessage(null);
+        dispatch(clearNotification());
       }, 5000);
     }
   };
@@ -66,17 +69,21 @@ const App = () => {
     try {
       blogFormRef.current.toggleVisibility();
       const createdBlog = await blogService.create(BlogToAdd);
-      setSuccessMessage(`Blog ${BlogToAdd.title} was successfully added`);
+      dispatch(
+        setNotification(
+          `Blog ${BlogToAdd.title} was successfully added`,
+          "success"
+        )
+      );
       setAllBlogs(allBlogs.concat(createdBlog));
-      setErrorMessage(null);
+
       setTimeout(() => {
-        setSuccessMessage(null);
+        dispatch(clearNotification());
       }, 5000);
     } catch (exception) {
-      setErrorMessage(`Cannot add blog ${BlogToAdd.title}`);
-      setSuccessMessage(null);
+      dispatch(setNotification(`Cannot add blog ${BlogToAdd.title}`, "error"));
       setTimeout(() => {
-        setSuccessMessage(null);
+        dispatch(clearNotification());
       }, 5000);
     }
   };
@@ -84,21 +91,26 @@ const App = () => {
   const updateBlog = async (BlogToUpdate) => {
     try {
       const updatedBlog = await blogService.update(BlogToUpdate);
-      setSuccessMessage(`Blog ${BlogToUpdate.title} was successfully updated`);
+      dispatch(
+        setNotification(
+          `Blog ${BlogToUpdate.title} was successfully updated`,
+          "success"
+        )
+      );
       setAllBlogs(
         allBlogs.map((blog) =>
           blog.id !== BlogToUpdate.id ? blog : updatedBlog
         )
       );
-      setErrorMessage(null);
       setTimeout(() => {
-        setSuccessMessage(null);
+        dispatch(clearNotification());
       }, 5000);
     } catch (exception) {
-      setErrorMessage(`Cannot update blog ${BlogToUpdate.title}`);
-      setSuccessMessage(null);
+      dispatch(
+        setNotification(`Cannot update blog ${BlogToUpdate.title}`, "error")
+      );
       setTimeout(() => {
-        setSuccessMessage(null);
+        dispatch(clearNotification());
       }, 5000);
     }
   };
@@ -107,20 +119,23 @@ const App = () => {
     try {
       if (window.confirm(`Delete ${BlogToDelete.title} ?`)) {
         blogService.remove(BlogToDelete.id);
-        setSuccessMessage(
-          `Blog ${BlogToDelete.title} was successfully deleted`
+        dispatch(
+          setNotification(
+            `Blog ${BlogToDelete.title} was successfully deleted`,
+            "success"
+          )
         );
         setAllBlogs(allBlogs.filter((blog) => blog.id !== BlogToDelete.id));
-        setErrorMessage(null);
         setTimeout(() => {
-          setSuccessMessage(null);
+          dispatch(clearNotification());
         }, 5000);
       }
     } catch (exception) {
-      setErrorMessage(`Cannot delete blog ${BlogToDelete.title}`);
-      setSuccessMessage(null);
+      dispatch(
+        setNotification(`Cannot delete blog ${BlogToDelete.title}`, "error")
+      );
       setTimeout(() => {
-        setSuccessMessage(null);
+        dispatch(clearNotification());
       }, 5000);
     }
   };
@@ -131,8 +146,8 @@ const App = () => {
     <div>
       <h2>Blogs</h2>
       <Notification
-        errorMessage={errorMessage}
-        successMessage={successMessage}
+        errorMessage={notification.errorMessage}
+        successMessage={notification.successMessage}
       />
       {user === null ? (
         <LoginForm
